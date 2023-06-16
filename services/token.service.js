@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+require('dotenv').config()
 //render js object user
 // const SECRECT = "secret"
 // const user = {
@@ -41,7 +42,7 @@ function signToken(user){
 		id :user.id,
 		name: user.name,
 		email : user.email,
-	},process.env.SECRECT, {
+	},process.env.SECRET, {
 		algorithm: "HS256",
 		expiresIn: "1d",
 	})
@@ -49,7 +50,7 @@ function signToken(user){
 function getInfoFromToken(req){
 	try{
 		let token = authHeader.split(' ')[1]
-		const decode = jwt.verify(token, process.env.SECRECT)
+		const decode = jwt.verify(token, process.env.SECRET)
 		if( new Date.now() / 1000 > decode.expiresIn) return false
 		return decode
 	}	catch(e){
@@ -61,7 +62,7 @@ function authorize(req,res,next){
 	console.log(authHeader)
 	if( authHeader && authHeader.split(' ')[0] === 'Bearer'){
 		try{
-			const decode = jwt.verify(authHeader.split(' ')[1], process.env.SECRECT)
+			const decode = jwt.verify(authHeader.split(' ')[1], process.env.SECRET)
 			console.log(Date.now() / 1000 , decode.exp)
 			if( Date.now() / 1000 < decode.exp)
 				{

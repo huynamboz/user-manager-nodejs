@@ -10,6 +10,26 @@ const Create = async (poll) => {
 		throw new Error('Internal server error');
 	}
 }
+
+const GetPollById = async (id) => {
+	try {
+		return await PollRepository.getPollById(id);
+	} catch (error) {
+		console.log(error);
+		throw new Error('Internal server error');
+	}
+}
+
+const DeletePoll = async (id) => {
+	try {
+		return await PollRepository.deletePoll(id);
+	} catch (error) {
+		console.log(error);
+		throw new Error('Internal server error');
+	}
+}
 module.exports = {
-	Create
+	Create,
+	GetPollById,
+	DeletePoll
 }

@@ -11,6 +11,9 @@ const getPolls = () => {
 const getPollById = async (id) => {
 	// get poll and option of it
 	return db('polls').where({ id }).first().then((poll) => {
+		if (!poll) {
+			return null;
+		}
 		return db('options').where({ poll_id: id }).then((options) => {
 			return {
 				...poll,
@@ -20,6 +23,7 @@ const getPollById = async (id) => {
 	}
 	);
 };
+
 
 function generateUUID() {
 	let d = new Date().getTime();

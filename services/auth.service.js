@@ -1,5 +1,6 @@
 const TokenService = require('./token.service');
 const UserController = require('../controllers/user.Controller');
+const { generateUUID } = require('../utils/uuid');
 const loginUserWithEmailAndPassword = async (email, password) => {
 	const user = await UserController.getUserByEmail(email);
 	console.log(user)
@@ -20,10 +21,11 @@ const register = async ( user ) => {
 	try {
 		const hashedPassword = TokenService.hashPasswordWithSalt(user.password, process.env.SALT );
 		user.password = hashedPassword.password;
+		user.id = generateUUID();
 		console.log(user)
 		return await UserController.createUser(user);
 	} catch (error) {
-		throw new Error('Internal server error');
+		throw new Error(error.message || 'Internal server error');
 	}
 }
 module.exports = {
