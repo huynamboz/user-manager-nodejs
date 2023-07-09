@@ -23,7 +23,8 @@ const config = knexConfig[environment];
 console.log(config)
 const db = knex(config);
 
-const port = 3009
-app.listen(port, function () {
+const port = 3009;
+const ip = '0.0.0.0';
+app.listen(port, ip, function () {
 	console.log(`Example app listening on port ${port}`)
 })
