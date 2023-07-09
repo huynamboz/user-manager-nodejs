@@ -48,9 +48,9 @@ let getGoogleSheetData = async (req, res, param) => {
 		});
 		console.log(result);
 		if (!result.id) {
-			return res.send({
-				status: 'success',
-				data: {},
+			return res.status(404).send({
+				status: 'error',
+				message: 'Không tìm thấy thông tin',
 			});
 		} else {
 			return res.send({
