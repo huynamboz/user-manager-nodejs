@@ -42,7 +42,8 @@ let getGoogleSheetData = async (req, res, param) => {
 			if (row.get('Địa chỉ email') === param || row.get('Số điện thoại') === param) {
 				result = {
 					id: row.get('STT'),
-					name: row.get('Họ và tên')
+					name: row.get('Họ và tên'),
+					email: row.get('Địa chỉ email'),
 				};
 			}
 		});
