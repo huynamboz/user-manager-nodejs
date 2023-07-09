@@ -8,11 +8,11 @@ const login = async (req, res) => {
 		const user = await AuthServices.loginUserWithEmailAndPassword(email, password);
 		console.log("userconteoller",user)
 		if (user){
-			const tokens = await TokenService.signToken(user);
+			const accessToken = await TokenService.signToken(user);
 			res.send(
 			{ 
 				data:{
-					user, tokens
+					user, accessToken
 				} 
 			});
 		} else {

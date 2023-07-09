@@ -19,23 +19,21 @@ const getPolls = async (req, res) => {
 };
 const createNewPoll = async (req, res) => {
 	try {
-		console.log(req.body)
-		;
 		const userId = TokenService.getInfoFromToken(req).id;
+		console.log("userId", userId)
 		if (!userId){
 			res.status(400).json({message: 'User not found'});
+			return;
 		}
 		const poll = await PollService.Create(req.body, userId);
-		console.log(poll)
+		console.log("poll", poll)
 		if (poll){
 			res.send({ 
 				data:poll
 			});
-		} else {
-			res.status(400).json({message: 'User not found'});
 		}
 	} catch (e) {
-		console.log(e.message);
+		console.log("ẻoor", e);
 		res.status(500).json({ message: 'Internal server error'});
 	}
 };

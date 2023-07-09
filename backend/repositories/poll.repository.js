@@ -24,7 +24,7 @@ const getPollById = async (id) => {
 	);
 };
 
-const getOptionsByPollId = (poll_id) => {
+const getOptionsByPollId = async (poll_id) => {
 	return db('options').where({ poll_id: poll_id });
 };
 
@@ -38,6 +38,7 @@ const createPoll = async (poll, options) => {
 					question: poll.question,
 					title: poll.title,
 					user_id: poll.user_id,
+					thumbnail: poll.thumbnail,
 					created_at: new Date(),
 					updated_at: new Date(),
 				})
@@ -64,8 +65,37 @@ const createPoll = async (poll, options) => {
 	}
 };
 
-const updatePoll = (id, updatePoll) => {
-	return db('poll').where({ id }).update(updatePoll);
+const updatePoll = (id, poll, reqOptions, optionsDeleted) => {
+	try {
+		db.transaction(function (trx) {
+			return trx('polls').where({ id }).update(poll)
+				.then(function () {
+					if (reqOptions) {
+						reqOptions = reqOptions.map((option) => {
+							return {
+								id: generateUUID(),
+								poll_id: id,
+								content: option.content,
+								created_at: new Date(),
+								updated_at: new Date(),
+							}
+						});
+						return trx('options').insert(reqOptions);
+					}
+				})
+				.then(function () {
+					if (optionsDeleted) {
+						return trx('options').whereIn('id', optionsDeleted).del();
+					}
+				})
+				.then(trx.commit)
+				.catch(trx.rollback);
+		});
+		console.log('Transaction complete.');
+	} catch (error) {
+		console.error('Transaction error:', error);
+		throw error;
+	}
 };
 
 const deletePoll = (id) => {

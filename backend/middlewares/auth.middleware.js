@@ -6,11 +6,11 @@ const authorize = (req, res, next) => {
 		return res.status(401).json({ message: 'Unauthorized' });
 	} else {
 		try {
-			const token = req.headers.authorization.split(' ')[1];
+			const token = req.headers.authorization.split(' ').length == 2 ? req.headers.authorization.split(' ')[1] : req.headers.authorization;
 			const decoded = jwt.verify(token, process.env.SECRET);
 
 			const userRole = decoded.role;
-			acl.isAllowed(userRole, req.route.path, req.method.toLowerCase(), (err, result) => {
+			acl.areAnyRolesAllowed(userRole, req.route.path, req.method.toLowerCase(), (err, result) => {
 				if (err) {
 					console.log(err);
 				} else {

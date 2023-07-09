@@ -9,10 +9,12 @@ const knexConfig = require('./knexfile');
 const usersRouter = require('./routes/users');
 const authRouter = require('./routes/auth');
 const pollRouter = require('./routes/poll');
+const LtesRouter = require('./routes/ltes');
 app.use(cors({ origin: '*' }));
 app.use('/users', usersRouter);
 app.use('/auth', authRouter);
 app.use('/polls', pollRouter);
+app.use('/ltes', LtesRouter);
 
 const environment = 'development';
 // console log .env 

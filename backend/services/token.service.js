@@ -42,6 +42,7 @@ function signToken(user){
 		id :user.id,
 		name: user.name,
 		email : user.email,
+		role: user.role
 	},process.env.SECRET, {
 		algorithm: "HS256",
 		expiresIn: "1d",
@@ -49,7 +50,7 @@ function signToken(user){
 }
 function getInfoFromToken(req){
 	try{
-		let token = req.headers.authorization.split(' ')[1]
+		const token = req.headers.authorization.split(' ').length == 2 ? req.headers.authorization.split(' ')[1] : req.headers.authorization;
 		const decode = jwt.verify(token, process.env.SECRET)
 		return decode
 	}	catch(e){

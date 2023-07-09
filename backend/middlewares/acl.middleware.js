@@ -15,6 +15,8 @@ aclInstance.allow([
 	{
 		roles: 'user',
 		allows: [
+			{ resources: '/me', permissions: ['get', 'post', 'put'] },
+			{ resources: '/', permissions: ['get', 'post'] },
 			{ resources: '/polls', permissions: ['get', 'post'] },
 			{ resources: '/polls/:id', permissions: ['get', 'put', 'delete'] },
 			// { resources: '/users', permissions: ['get', 'post'] },

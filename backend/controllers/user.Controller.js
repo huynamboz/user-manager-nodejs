@@ -43,12 +43,32 @@ const updateUser = (id, updatedUser) => {
 const deleteUser = (id) => {
 	return db('users').where({ id }).del();
 };
+const getUserPolls = async (id) => {
+	// get poll and option of it
+	return await db('polls').where({ user_id: id }).then((polls) => {
+		if (!polls) {
+			return null;
+		}
+		polls = polls.map((poll) => {
+			return db('options').where({ poll_id: poll.id }).then((options) => {
+				return {
+					...poll,
+					options
+				}
+			})
+		}
+		);
+		return Promise.all(polls);
+	}
+	);
+};
 module.exports = {
 	getUsers,
 	getUserById,
 	createUser,
 	updateUser,
 	deleteUser,
-	getUserByEmail
+	getUserByEmail,
+	getUserPolls,
 };
 

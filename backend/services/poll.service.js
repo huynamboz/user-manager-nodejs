@@ -42,19 +42,25 @@ const DeletePoll = async (id) => {
 
 const UpdatePoll = async (id, pollA) => {
 	try {
-		let reqOptions = pollA.options;
-		let listIdNewOptions = reqOptions.map((item) => {
-			return item.id 
-		});
-		let optionsDeteted = reqOptions.filter((item) => {
-			return !(item.id in listIdNewOptions)
-		})
-		console.log(optionsDeteted);
 		const poll = PollRepository.getPollById(id);
 		if (!poll){
 			throw new Error('Poll not found');
 		}
-		const options = PollRepository.getOptionsByPollId(id);
+		let reqOptions = pollA.options;
+		let listIdNewOptions = reqOptions.map((item) => {
+			return item.id 
+		});
+		const currentOptions = await PollRepository.getOptionsByPollId(id);
+		let optionsDeleted = currentOptions.map((item) => {
+			if(!(item.id in listIdNewOptions)){ 
+				console.log(item.id);
+				return item.id;}
+		})
+		poll.title = pollA.title;
+		poll.question = pollA.question;
+		poll.thumbnail = pollA.thumbnail;
+		console.log(optionsDeleted);
+		return await PollRepository.updatePoll(id, poll, reqOptions, optionsDeleted);
 
 		if (poll){
 		}

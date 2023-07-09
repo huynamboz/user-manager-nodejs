@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.Controller');
 const AuthMiddleware = require('../middlewares/auth.middleware');
+const TokenService = require('../services/token.service');
 const bodyParser = require('body-parser')
 router.use(bodyParser.json())
 // Lấy danh sách người dùng
@@ -9,6 +10,22 @@ router.get('/', async (req, res) => {
 	try {
 		const users = await userController.getUsers();
 		res.json(users);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
+	}
+});
+router.get('/me', [AuthMiddleware.authorize], async (req, res) => {
+	try {
+		console.log(req.headers);
+		const user_id = TokenService.getInfoFromToken(req).id;
+		console.log(user_id);
+		const user = await userController.getUserById(user_id);
+		if (user) {
+			res.json(user);
+		} else {
+			res.status(404).json({ error: 'User not found' });
+		}
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: 'Internal server error' });
@@ -45,12 +62,21 @@ router.post('/', async (req, res) => {
 });
 
 // Cập nhật thông tin người dùng
-router.put('/:id', async (req, res) => {
-	const userId = req.params.id;
+router.put('/me', [AuthMiddleware.authorize], async (req, res) => {
 	const updatedUser = req.body;
 	try {
-		await userController.updateUser(userId, updatedUser);
-		res.json({ message: 'User updated' });
+		const user_id = TokenService.getInfoFromToken(req).id;
+		const user = await userController.getUserById(user_id);
+		if (user) {
+			await userController.updateUser(user_id, updatedUser);
+			const user = await userController.getUserById(user_id);
+			res.json({ 
+				message: 'User updated',
+				data: user
+			 });
+		} else {
+			res.status(404).json({ error: 'User not found' });
+		}
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: 'Internal server error' });
@@ -69,4 +95,19 @@ router.delete('/:id', async (req, res) => {
 	}
 });
 
+router.get('/:id/polls', async (req, res) => {
+	const userId = req.params.id;
+	try {
+		const user = await userController.getUserById(userId);
+		if (!user) {
+			res.status(404).json({ error: 'User not found' });
+			return;
+		}
+		const polls = await userController.getUserPolls(userId);
+		res.json(polls);
+	} catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
+	}
+});
 module.exports = router;
