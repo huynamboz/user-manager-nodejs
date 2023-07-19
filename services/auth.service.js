@@ -3,9 +3,9 @@ const UserController = require('../controllers/user.Controller');
 const { generateUUID } = require('../utils/uuid');
 const loginUserWithEmailAndPassword = async (email, password) => {
 	const user = await UserController.getUserByEmail(email);
-	console.log(user)
+	console.log("userDB",user)
 	if (!user){
-		throw new Error({message: 'not found'});
+		throw new Error('Email or password is incorrect');
 	}
 	const passwordHashed = TokenService.hashPasswordWithSalt(password, process.env.SALT);
 	if (user.password == passwordHashed.password){
@@ -13,6 +13,8 @@ const loginUserWithEmailAndPassword = async (email, password) => {
 			id: user.id,
 			email : user.email,
 			name : user.name,
+			avatar: user.avatar,
+			role: user.role
 		}
 	}
 }
@@ -22,8 +24,10 @@ const register = async ( user ) => {
 		const hashedPassword = TokenService.hashPasswordWithSalt(user.password, process.env.SALT );
 		user.password = hashedPassword.password;
 		user.id = generateUUID();
+		user.role = 'user';
 		console.log(user)
-		return await UserController.createUser(user);
+		await UserController.createUser(user);
+		return user;
 	} catch (error) {
 		throw new Error(error.message || 'Internal server error');
 	}

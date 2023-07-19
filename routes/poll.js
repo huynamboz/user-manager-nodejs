@@ -5,21 +5,26 @@ const bodyParser = require('body-parser')
 const AuthMiddleware = require('../middlewares/auth.middleware');
 
 router.use(bodyParser.json())
-// Lấy danh sách người dùng
-router.post('/', async (req, res) => {
+router.post('/', [AuthMiddleware.authorize],async (req, res) => {
 	try {
-		const data = await pollController.createNewPoll(req, res);
-		res.json(data);
+		await pollController.createNewPoll(req, res);
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: 'Internal server error' });
 	}
 });
-
-router.get('/:id',[AuthMiddleware.authorize], async (req, res) => {
+router.get('/', async (req, res) => {
 	try {
-		const data = await pollController.getPollById(req, res);
-		res.json(data);
+		await pollController.getPolls(req, res);
+	}
+	catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
+	}
+});
+router.get('/:id', async (req, res) => {
+	try {
+		await pollController.getPollById(req, res);
 	}
 	catch (err) {
 		console.error(err);
@@ -29,8 +34,17 @@ router.get('/:id',[AuthMiddleware.authorize], async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
 	try {
-		const data = await pollController.deletePoll(req, res);
-		res.json(data);
+		await pollController.deletePoll(req, res);
+	}
+	catch (err) {
+		console.error(err);
+		res.status(500).json({ error: 'Internal server error' });
+	}
+});
+
+router.put('/:id', async (req, res) => {
+	try {
+		await pollController.updatePoll(req, res);
 	}
 	catch (err) {
 		console.error(err);

@@ -6,33 +6,37 @@ const login = async (req, res) => {
 		console.log(req.body)
 		const { email, password } = req.body;
 		const user = await AuthServices.loginUserWithEmailAndPassword(email, password);
+		console.log("userconteoller",user)
 		if (user){
-			const tokens = await TokenService.signToken(user);
+			const accessToken = await TokenService.signToken(user);
 			res.send(
 			{ 
 				data:{
-					user, tokens
+					user, accessToken
 				} 
 			});
 		} else {
 			res.status(400).json({message: 'User not found'});
 		}
 	} catch (e) {
-		console.log(e.message);
-		res.status(500).json({ message: 'Internal server error'});
+		console.log(e);
+		res.status(500).json({ message: e.message || 'Internal server error'});
 	}
 };
 
 const register = async ( req, res) => {
 	try {
 		const user = req.body;
-		const newId = await AuthServices.register(user);
-		console.log(newId);
-		const newUser = await UserController.getUserById(newId[0]);
+		const newUser = await AuthServices.register(user);
 		res.status(201).json(
 			{
 				status: "Success",
-				data: newUser
+				data: {
+					name: newUser.name,
+					email: newUser.email,
+					id: newUser.id,
+					avatar: newUser.avatar
+				}
 			}
 		)
 	} catch (error) {

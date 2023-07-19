@@ -1,6 +1,6 @@
 const knex = require('knex');
 const config = require('../knexfile');
-
+const { generateUUID } = require('../utils/uuid');
 const environment = process.env.NODE_ENV || 'development';
 const db = knex(config[environment]);
 // Lấy danh sách người dùng
@@ -24,18 +24,8 @@ const getPollById = async (id) => {
 	);
 };
 
-
-function generateUUID() {
-	let d = new Date().getTime();
-	if (typeof performance !== 'undefined' && typeof performance.now === 'function') {
-		d += performance.now(); // use high-precision timer if available
-	}
-	const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-		const r = (d + Math.random() * 16) % 16 | 0;
-		d = Math.floor(d / 16);
-		return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-	});
-	return uuid;
+const getOptionsByPollId = async (poll_id) => {
+	return db('options').where({ poll_id: poll_id });
 };
 
 const createPoll = async (poll, options) => {
@@ -48,6 +38,7 @@ const createPoll = async (poll, options) => {
 					question: poll.question,
 					title: poll.title,
 					user_id: poll.user_id,
+					thumbnail: poll.thumbnail,
 					created_at: new Date(),
 					updated_at: new Date(),
 				})
@@ -74,8 +65,37 @@ const createPoll = async (poll, options) => {
 	}
 };
 
-const updatePoll = (id, updatePoll) => {
-	return db('poll').where({ id }).update(updatePoll);
+const updatePoll = (id, poll, reqOptions, optionsDeleted) => {
+	try {
+		db.transaction(function (trx) {
+			return trx('polls').where({ id }).update(poll)
+				.then(function () {
+					if (reqOptions) {
+						reqOptions = reqOptions.map((option) => {
+							return {
+								id: generateUUID(),
+								poll_id: id,
+								content: option.content,
+								created_at: new Date(),
+								updated_at: new Date(),
+							}
+						});
+						return trx('options').insert(reqOptions);
+					}
+				})
+				.then(function () {
+					if (optionsDeleted) {
+						return trx('options').whereIn('id', optionsDeleted).del();
+					}
+				})
+				.then(trx.commit)
+				.catch(trx.rollback);
+		});
+		console.log('Transaction complete.');
+	} catch (error) {
+		console.error('Transaction error:', error);
+		throw error;
+	}
 };
 
 const deletePoll = (id) => {
@@ -86,6 +106,7 @@ module.exports = {
 	getPollById,
 	createPoll,
 	updatePoll,
-	deletePoll
+	deletePoll,
+	getOptionsByPollId
 };
 
