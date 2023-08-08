@@ -5,7 +5,7 @@ const loginUserWithEmailAndPassword = async (email, password) => {
 	const user = await UserController.getUserByEmail(email);
 	console.log("userDB",user)
 	if (!user){
-		throw new Error('Email or password is incorrect');
+		return null;
 	}
 	const passwordHashed = TokenService.hashPasswordWithSalt(password, process.env.SALT);
 	if (user.password == passwordHashed.password){

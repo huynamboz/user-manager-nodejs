@@ -6,6 +6,14 @@ const login = async (req, res) => {
 		console.log(req.body)
 		const { email, password } = req.body;
 		const user = await AuthServices.loginUserWithEmailAndPassword(email, password);
+		if (!user) {
+			res.status(400).json({ 
+				data: {
+					message: 'Email or password not correct'
+				}
+			});
+			return;
+		}
 		console.log("userconteoller",user)
 		if (user){
 			const accessToken = await TokenService.signToken(user);
@@ -13,7 +21,8 @@ const login = async (req, res) => {
 			{ 
 				data:{
 					user, accessToken
-				} 
+				} ,
+				message: 'Login success'
 			});
 		} else {
 			res.status(400).json({message: 'User not found'});
