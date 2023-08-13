@@ -9,7 +9,10 @@ router.use(bodyParser.json())
 router.get('/', async (req, res) => {
 	try {
 		const users = await userController.getUsers();
-		res.json(users);
+		res.json({
+			data: users,
+			message: 'Get users successfully'
+		});
 	} catch (err) {
 		console.error(err);
 		res.status(500).json({ error: 'Internal server error' });

@@ -6,7 +6,7 @@ const db = knex(config[environment]);
 // Lấy danh sách người dùng
 const getUsers = async () => {
 	return await db('users')
-    .select('users.id', 'users.name', 'users.email', 'users.avatar', 'users.role', 'users.created_at', 'users.updated_at')
+    .select('users.id', 'users.name', 'users.email', 'users.avatar', 'users.role', 'users.created_at', 'users.status_active', 'users.updated_at')
     .count('polls.id as poll_count')
     .leftJoin('polls', 'users.id', 'polls.user_id')
     .groupBy('users.id');
