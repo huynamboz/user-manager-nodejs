@@ -16,7 +16,7 @@ class Realtime {
 	connect(server) {
 		const io = require('socket.io')(server, {
 			cors: {
-			  origin: 'http://localhost:8000', // Replace with the actual origin of your Nuxt.js client
+			  origin: process.env.SOCKET_CLIENT, // Replace with the actual origin of your Nuxt.js client
 			  methods: ['GET', 'POST'],
 			},
 		  });
