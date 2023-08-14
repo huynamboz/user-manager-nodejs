@@ -7,6 +7,7 @@ let data = [
 		role: "admin",
 	}
 ]
+let sum =0;
 const connectedSockets = new Set(); 
 let connection = null;
 class Realtime {
@@ -29,11 +30,11 @@ class Realtime {
             });
 
             this._socket.on('disconnect', function () {
-                console.log(socket.id,"Un socket se desconecto");
+                console.log(socket.id,"Un socket se desconecto", --sum);
 				connectedSockets.delete(socket);
             });
 
-            console.log(`New socket connection: ${connectedSockets.length}`);
+            console.log(`New socket connection: ${connectedSockets.length}`, ++sum);
         });
 	}
 	sendEvent(event, data) {
