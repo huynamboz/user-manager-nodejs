@@ -14,7 +14,7 @@ const getPolls = async (req, res) => {
 		}
 	} catch (e) {
 		console.log(e.message);
-		res.status(500).json({ message: 'Internal server error'});
+		res.status(e.statusCode).json({ message: e.message});
 	}
 };
 const createNewPoll = async (req, res) => {

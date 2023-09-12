@@ -4,6 +4,7 @@ const userController = require('../controllers/user.Controller');
 const AuthMiddleware = require('../middlewares/auth.middleware');
 const TokenService = require('../services/token.service');
 const bodyParser = require('body-parser')
+const { generateUUID } = require('../utils/uuid')
 router.use(bodyParser.json())
 // Lấy danh sách người dùng
 router.get('/', async (req, res) => {
@@ -55,8 +56,9 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
 	const newUser = req.body;
 	try {
+		newUser.id = generateUUID();
 		console.log(newUser);
-		await userController.createUser(newUser);
+		console.log(await userController.createUser(newUser))
 		res.status(201).json({ message: 'User created' });
 	} catch (err) {
 		console.error(err);

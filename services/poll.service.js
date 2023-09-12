@@ -1,12 +1,11 @@
 const PollRepository = require('../repositories/poll.repository');
 const TokenService = require('../services/token.service');
-
+const { httpBadRequestError, httpInternalServerError } = require('../utils/httpException');
 const GetPolls = async () => {
 	try {
-		return await PollRepository.getPolls();
+		return await PollRepository.getPollks();
 	} catch (error) {
-		console.log(error);
-		throw new Error('Internal server error');
+		throw new httpInternalServerError();
 	}
 }
 const Create = async (poll, userId) => {

@@ -4,12 +4,13 @@ const config = require('../knexfile');
 const environment = process.env.NODE_ENV || 'development';
 const db = knex(config[environment]);
 // Lấy danh sách người dùng
-const getUsers = async () => {
+const getUsers = async () => { //sort by created_at
 	return await db('users')
     .select('users.id', 'users.name', 'users.email', 'users.avatar', 'users.role', 'users.created_at', 'users.status_active', 'users.updated_at')
     .count('polls.id as poll_count')
     .leftJoin('polls', 'users.id', 'polls.user_id')
-    .groupBy('users.id');
+    .groupBy('users.id')
+	.orderBy('users.created_at', 'desc');
 		// return {
 		// 	id: user.id,
 		// 	email: user.email,

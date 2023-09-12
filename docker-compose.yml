@@ -1,0 +1,12 @@
+version: '3'
+# write docker-compose mysql
+services:
+  backend:
+    image: backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - HOST=103.195.237.70
+    ports:
+      - "3009:3009"

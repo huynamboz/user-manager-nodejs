@@ -1,6 +1,5 @@
 const knex = require('knex');
 const config = require('../knexfile');
-const { generateUUID } = require('../utils/uuid');
 const environment = process.env.NODE_ENV || 'development';
 const db = knex(config[environment]);
 

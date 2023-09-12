@@ -9,25 +9,19 @@ router.post('/', [AuthMiddleware.authorize],async (req, res) => {
 	try {
 		await pollController.createNewPoll(req, res);
 	} catch (err) {
-		console.error(err);
+		console.log(err.statusCode);
 		res.status(500).json({ error: 'Internal server error' });
 	}
 });
 router.get('/', async (req, res) => {
-	try {
 		await pollController.getPolls(req, res);
-	}
-	catch (err) {
-		console.error(err);
-		res.status(500).json({ error: 'Internal server error' });
-	}
 });
 router.get('/:id', async (req, res) => {
 	try {
 		await pollController.getPollById(req, res);
 	}
 	catch (err) {
-		console.error(err);
+		console.log(err);
 		res.status(500).json({ error: 'Internal server error' });
 	}
 });
@@ -37,7 +31,7 @@ router.delete('/:id', async (req, res) => {
 		await pollController.deletePoll(req, res);
 	}
 	catch (err) {
-		console.error(err);
+		console.log(err);
 		res.status(500).json({ error: 'Internal server error' });
 	}
 });
@@ -47,7 +41,7 @@ router.put('/:id', async (req, res) => {
 		await pollController.updatePoll(req, res);
 	}
 	catch (err) {
-		console.error(err);
+		console.log(err);
 		res.status(500).json({ error: 'Internal server error' });
 	}
 });
